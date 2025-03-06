@@ -5,8 +5,6 @@ script_dir=$(dirname "$0")
 
 venv_dir="$script_dir/.venv"
 
-#!/bin/bash
-
 # Check if Python 3 is installed
 if command -v python3 &>/dev/null; then
     echo "Python 3 is already installed."
@@ -14,7 +12,7 @@ else
     echo "Python 3 is not installed. Installing..."
     # Update package list and install Python 3
     sudo apt update
-    sudo apt install python3 -y
+    sudo apt install python3
     echo "Python 3 has been installed."
 fi
 
@@ -70,7 +68,7 @@ class DataDisplayApp:
         self.root.attributes('-fullscreen', True)
         self.root.config(bg="#f0f0f0")
         self.root.grid_rowconfigure(0, weight=1)  # Allow vertical expansion
-        self.root.grid_rowconfigure(1, weight=4)  # Allow vertical expansion
+        self.root.grid_rowconfigure(1, weight=5)  # Allow vertical expansion
         self.root.grid_rowconfigure(2, weight=1)  # Allow vertical expansion
         self.root.grid_columnconfigure(0, weight=1)  # Allow vertical expansion
 
@@ -82,7 +80,7 @@ class DataDisplayApp:
         #self.header_frame.pack(fill="both", pady=5)
         self.title_label = tk.Label(self.header_frame, text="Water Quality Monitoring System", 
                                     font=("Arial", 23, "bold"), fg="white", bg="#2a2a2a")
-        self.title_label.pack(pady=10)
+        self.title_label.pack(pady=5)
 
         # Main Frame (2/3 data display, 1/3 buttons)
         self.main_frame = tk.Frame(self.root, bg="#f0f0f0")
@@ -125,16 +123,16 @@ class DataDisplayApp:
         self.history_button = self.create_button("Table")
         self.graph_button = self.create_button("Graph")
         self.settings_button = self.create_button("Settings")
-        self.about_button = self.create_button("About Me")
+        self.about_button = self.create_button("About Me",cmd = self.exit)
 
-        self.history_button.grid(row=0, column=0, padx=0, pady=30, sticky="nsew")
-        self.graph_button.grid(row=1, column=0, padx=0, pady=30, sticky="nsew")
-        self.settings_button.grid(row=2, column=0, padx=0, pady=30, sticky="nsew")
-        self.about_button.grid(row=3, column=0, padx=0, pady=30, sticky="nsew")
+        self.history_button.grid(row=0, column=0, padx=0, pady=5, sticky="nsew")
+        self.graph_button.grid(row=1, column=0, padx=0, pady=5, sticky="nsew")
+        self.settings_button.grid(row=2, column=0, padx=0, pady=5, sticky="nsew")
+        self.about_button.grid(row=3, column=0, padx=0, pady=5, sticky="nsew")
 
         #create frame for status
-        self.status_frame = tk.Frame(self.root, bg="#f0f0f0", height=50)
-        self.status_frame.grid(row=2,column=0 ,sticky= "nsew", pady= 20 )
+        self.status_frame = tk.Frame(self.root, bg="#f0f0f0")
+        self.status_frame.grid(row=2,column=0 ,sticky= "nsew", pady= 5 )
         #self.status_frame.pack(fill="x", pady=20)
 
         self.Eth_led = self.create_led("ETH")
@@ -145,7 +143,7 @@ class DataDisplayApp:
 
     def create_text_box(self, initial_text):
         frame = tk.Frame(self.data_frame, bg="#3f9fd8", bd=3, relief="solid")
-        text_box = tk.Text(frame, font=("Arial", 20), bg="white", fg="black", wrap=tk.WORD, bd=5)
+        text_box = tk.Text(frame, font=("Arial", 46), bg="white", fg="black", wrap=tk.WORD, bd=5)
 
         text_box.insert(tk.END, "\n" +initial_text)
         text_box.config(state=tk.DISABLED)
@@ -157,13 +155,15 @@ class DataDisplayApp:
         return button
 
     def create_led(self,text):
-        label = tk.Label(self.status_frame, text=f" {text}:", font=("Arial", 11), bg="#f0f0f0")
+        label = tk.Label(self.status_frame, text=f" {text}:", font=("Arial", 18), bg="#f0f0f0")
         label.pack(side="left", padx=1)
 
         led = tk.Canvas(self.status_frame, width=20, height=20, bg="#f0f0f0", highlightthickness=0)
         led.pack(side="left", padx=5)
-        led.create_oval(2, 2, 11, 11, fill="red", tags="led")  # Default: Red
+        led.create_oval(2, 2, 18, 18, fill="red", tags="led")  # Default: Red
         return led
+    def exit(self):
+        self.root.destroy()
 
 if __name__ == "__main__":
     root = tk.Tk()

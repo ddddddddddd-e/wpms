@@ -81,7 +81,7 @@ class DataDisplayApp:
         self.header_frame.grid(row = 0,column=0,sticky="nsew")
         #self.header_frame.pack(fill="both", pady=5)
         self.title_label = tk.Label(self.header_frame, text="Water Quality Monitoring System", 
-                                    font=("Arial", 50, "bold"), fg="white", bg="#2a2a2a")
+                                    font=("Arial", 23, "bold"), fg="white", bg="#2a2a2a")
         self.title_label.pack(pady=10)
 
         # Main Frame (2/3 data display, 1/3 buttons)
@@ -145,7 +145,7 @@ class DataDisplayApp:
 
     def create_text_box(self, initial_text):
         frame = tk.Frame(self.data_frame, bg="#3f9fd8", bd=3, relief="solid")
-        text_box = tk.Text(frame, font=("Arial", 46), bg="white", fg="black", wrap=tk.WORD, bd=5)
+        text_box = tk.Text(frame, font=("Arial", 20), bg="white", fg="black", wrap=tk.WORD, bd=5)
 
         text_box.insert(tk.END, "\n" +initial_text)
         text_box.config(state=tk.DISABLED)

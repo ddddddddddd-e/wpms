@@ -143,7 +143,7 @@ class DataDisplayApp:
 
     def create_text_box(self, initial_text):
         frame = tk.Frame(self.data_frame, bg="#3f9fd8", bd=3, relief="solid")
-        text_box = tk.Text(frame, font=("Arial", 46), bg="white", fg="black", wrap=tk.WORD, bd=5)
+        text_box = tk.Text(frame, font=("Arial", 20), bg="white", fg="black", wrap=tk.WORD, bd=5)
 
         text_box.insert(tk.END, "\n" +initial_text)
         text_box.config(state=tk.DISABLED)

@@ -70,7 +70,7 @@ class DataDisplayApp:
         self.root.attributes('-fullscreen', True)
         self.root.config(bg="#f0f0f0")
         self.root.grid_rowconfigure(0, weight=1)  # Allow vertical expansion
-        self.root.grid_rowconfigure(1, weight=5)  # Allow vertical expansion
+        self.root.grid_rowconfigure(1, weight=4)  # Allow vertical expansion
         self.root.grid_rowconfigure(2, weight=1)  # Allow vertical expansion
         self.root.grid_columnconfigure(0, weight=1)  # Allow vertical expansion
 
@@ -157,12 +157,12 @@ class DataDisplayApp:
         return button
 
     def create_led(self,text):
-        label = tk.Label(self.status_frame, text=f" {text}:", font=("Arial", 18), bg="#f0f0f0")
+        label = tk.Label(self.status_frame, text=f" {text}:", font=("Arial", 11), bg="#f0f0f0")
         label.pack(side="left", padx=1)
 
         led = tk.Canvas(self.status_frame, width=20, height=20, bg="#f0f0f0", highlightthickness=0)
         led.pack(side="left", padx=5)
-        led.create_oval(2, 2, 18, 18, fill="red", tags="led")  # Default: Red
+        led.create_oval(2, 2, 11, 11, fill="red", tags="led")  # Default: Red
         return led
 
 if __name__ == "__main__":

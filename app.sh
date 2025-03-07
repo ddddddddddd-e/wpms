@@ -417,7 +417,7 @@ def table(root):
 
     # Table setup with numbering column
     columns = ("Date-Time", "pH", "Temperature", "COD", "SS", "Waterflow")
-    tree = ttk.Treeview(frame, columns=columns, show="headings", yscrollcommand=tree_scroll.set, height=30)
+    tree = ttk.Treeview(frame, columns=columns, show="headings", yscrollcommand=tree_scroll.set, height=10)
 
     # Configure the style for the Treeview
     style = ttk.Style()
@@ -426,7 +426,7 @@ def table(root):
 
     for col in columns:
         tree.heading(col, text=col)
-        tree.column(col, anchor="center")
+        tree.column(col, anchor="center",width=screen_width//len(columns))
 
     # Attach scrollbar to the table
     tree_scroll.config(command=tree.yview)
@@ -549,7 +549,7 @@ class DataDisplayApp:
         frame.pack_propagate(False)
         return frame
     def create_button(self, text,cmd = None):
-        button = tk.Button(self.button_frame, text=text, font=("Arial", 18, "bold"), bg="#4CAF50", fg="white", width=4, height=2,bd = 5,activebackground= "#4CAF00",command= cmd)
+        button = tk.Button(self.button_frame, text=text, font=("Arial", 18, "bold"), bg="#4CAF50", fg="white", width=4, height=2,bd = 5,activeforeground= "white",activebackground= "#4CAF50",command= cmd)
         return button
 
     def create_led(self,text):

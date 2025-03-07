@@ -95,7 +95,6 @@ def get_active_network():
     eth_status = wifi_status =False
     interfaces = psutil.net_if_stats()
     for interface, stats in interfaces.items():
-        # print(interface, stats)
         if stats.isup:  # Check if interface is up
             if "Ethernet" in interface or "en" in interface:  # Ethernet names
                 eth_status = True
@@ -126,13 +125,10 @@ class MQTTClient:
         try:
             with open("config.json","r") as file:
                 data = json.load(file)
-                print(data)
         except:
-            print("failed to open file")
             with open("config.json","w") as file:
-                data = {"server": "iot.moe.gov.kh","port": 8883,"username":"iot","password":"&j?/yO^{c[?+ub","userId": get_mac_addresses(),"topic": "test","security":True}
+                data = {"server": "iot.moe.gov.kh","port": 8883,"username":"iot","password":"&j?/yO^{c[?+ub","userId": get_mac_addresses(),"topic": "mqtt/sensor/routing","security":True}
                 json.dump(data,file,indent=4)
-        print(data["security"])
         self.broker = data["server"]
         self.port = data["port"]
         self.userId = data["userId"]
@@ -169,13 +165,11 @@ class MQTTClient:
                         pass
                     break
                 if not lines:  # Check if the file is empty
-                    print("File is empty.")
                     break
                 
                 first_line = lines[0].strip()  # Get the first line
                 try:
                     data = json.loads(first_line)  # Parse JSON
-                    print("First Line Data:", data)  # Process first line here
                     if(self.publish_dict(data)):
                         with open("sent_buffer_data.jsonl","a") as file1:
                             json.dump(data,file1)
@@ -209,10 +203,8 @@ class MQTTClient:
         while not client.is_connected():
             try:
                 client.reconnect()
-                print("Reconnected successfully")
                 time.sleep(5)
             except Exception as e:
-                print(f"Reconnection failed: {e}")
                 time.sleep(5)
     def set_user_pass(self, username, password):
         self.client.username_pw_set(username, password)
@@ -236,8 +228,6 @@ class MQTTClient:
                 self.setup_Connection = True
                 print("mqtt setup succes!!")
             except Exception as e:
-                print("error : ",e)
-                print("Please Check your Network connection")
                 time.sleep(5)
     def publish(self,ph, temp, cod, ss, waterflow):
         payload = {
@@ -266,10 +256,8 @@ class MQTTClient:
     def publish_dict(self,payload):
         json_payload = json.dumps(payload)
         if self.client.is_connected():  # Check if connected
-            print(f"Published on Topic: {self.topic_send}")
             self.client.publish(self.topic_send, str(json_payload))
         else:
-            #print("MQTT Client is not connected")
             with open("buffer_data.jsonl","a") as file:
                 json.dump(payload,file)
                 file.write('\n')
@@ -291,8 +279,6 @@ class RS485:
         try:
             self.ser = serial.Serial(self.port, self.burate, timeout=self.timeout)
         except serial.SerialException:
-            print("Serial port not found..")
-            print(self.port)
             self.ser = None
         return self.ser
 
@@ -309,10 +295,8 @@ class RS485:
             raw_data = self.ser.read(9)
             ph_value = bytes([raw_data[5], raw_data[6], raw_data[3], raw_data[4]])
             value = round(struct.unpack('>f', ph_value)[0], 2)
-            print(f"pH: {value}")
             return value
 
-        print("pH sensor timeout")
         return None
 
     def temp_sensor(self):
@@ -328,10 +312,8 @@ class RS485:
             raw_data = self.ser.read(9)
             temp_value = bytes([raw_data[5], raw_data[6], raw_data[3], raw_data[4]])
             value = round(struct.unpack('>f', temp_value)[0], 2)
-            print(f"Temperature: {value}")
             return value
 
-        print("Temperature sensor timeout")
         return None
 
     def cod_sensor(self):
@@ -350,10 +332,8 @@ class RS485:
 
             cod = round(struct.unpack('>f', cod_data)[0], 2)
             toc = round(struct.unpack('>f', toc_data)[0], 2)
-            print(f"COD: {cod}, TOC: {toc}")
             return cod, toc
 
-        print("COD sensor timeout")
         return None, None
 
     def tss_sensor(self):
@@ -369,10 +349,8 @@ class RS485:
             raw_data = self.ser.read(13)
             tss_data = bytes([raw_data[10], raw_data[9], raw_data[8], raw_data[7]])
             value = round(struct.unpack('>f', tss_data)[0], 2)
-            print(f"TSS: {value}")
             return value
 
-        print("TSS sensor timeout")
         return None
     
     def check_serial(self):
@@ -381,11 +359,8 @@ class RS485:
         for port, desc, hwid in sorted(ports):
             if "3-1" in hwid or "3-2" in hwid:
                 if "PID=1A86:7523" in hwid:  # pid: 1A86, vid: 7523 is code for chip CH340 on RS485 module(RS485)
-                    print("RS485 connected")
-                    print("{}: {} [{}]".format(port, desc, hwid))
                     self.port = port
                     return True
-        print("RS485 not connected")
         return False
 
 def table(root):
@@ -397,7 +372,6 @@ def table(root):
                 data = [json.loads(line) for line in file]
                 return data[::-1]
         except Exception as e:
-            print(e)
             return []
 
     def refresh_table():
@@ -407,7 +381,6 @@ def table(root):
 
         # Load new data
         json_data = load_data()
-        print("Table Refresh !!")
         # Insert data into the table with row numbers
         timestamp =json_data[0]["timestamp"]
         for i, entry in enumerate(json_data, start=1):
@@ -420,11 +393,9 @@ def table(root):
                 ))
             except KeyError as e:
                 print(f"Missing key in JSON entry: {e}")
-        print(timestamp)
         delay = round(timestamp+31 -time.time() )
         if delay <=0 :
             delay = 30
-        print(delay)
         # Schedule the next refresh
         root.after(delay*1000,refresh_table)  # Refresh every 10 seconds
 
@@ -450,8 +421,8 @@ def table(root):
 
     # Configure the style for the Treeview
     style = ttk.Style()
-    style.configure("Treeview.Heading", font=("Arial", 16, "bold"))  # Header font
-    style.configure("Treeview", font=("Arial", 14))  # Cell font
+    style.configure("Treeview.Heading", font=("Arial", 10, "bold"))  # Header font
+    style.configure("Treeview", font=("Arial", 8))  # Cell font
 
     for col in columns:
         tree.heading(col, text=col)
@@ -649,7 +620,6 @@ class DataDisplayApp:
         time.sleep(0.5)
         while self.running:
             start = time.time()
-            print("Updating data...")
             self.ph = self.tss = self.cod = self.toc = self.temp = self.waterflow = None
             try :
                 if self.reader.ser is None:

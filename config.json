@@ -1,0 +1,9 @@
+{
+    "server": "iot.moe.gov.kh",
+    "port": 8883,
+    "username": "iot",
+    "password": "&j?/yO^{c[?+ub",
+    "userId": "A8:41:F4:2D:2E:C0",
+    "topic": "test",
+    "security": true
+}

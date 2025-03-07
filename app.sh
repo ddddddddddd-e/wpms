@@ -390,7 +390,10 @@ def table(root):
         # Load new data
         json_data = load_data()
         # Insert data into the table with row numbers
-        timestamp =json_data[0]["timestamp"]
+        try:
+            timestamp =json_data[0]["timestamp"]
+        except :
+            timestamp =0
         for i, entry in enumerate(json_data, start=1):
             try:
                 fields = entry

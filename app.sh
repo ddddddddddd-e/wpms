@@ -65,7 +65,7 @@ fi
 
 
 # Specify the file you want to create in the same directory
-file_path="$script_dir"
+file_path="$script_dir".
 
 # Set the environment variable for Python to access
 export FILE_PATH="$file_path"
@@ -454,7 +454,11 @@ class DataDisplayApp:
         print("screen started")
         self.root = root
         self.root.title("Environmental Data Display")
-        self.root.attributes('-fullscreen', True)
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+
+    # Set the window to cover the full screen size
+        root.geometry(f"{screen_width}x{screen_height}")
         self.root.config(bg="#f0f0f0")
         self.root.grid_rowconfigure(0, weight=1)  # Allow vertical expansion
         self.root.grid_rowconfigure(1, weight=5)  # Allow vertical expansion

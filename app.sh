@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Get the directory of the script
-script_dir=$(dirname "$0")
+script_dir="/home/kickpi/Desktop/wpms/"
 
-venv_dir="/home/kickpi/Desktop/wpms"
+venv_dir="/home/kickpi/Desktop/wpms/"
 
 # Check if Python 3 is installed
 if command -v python3 &>/dev/null; then
@@ -454,11 +454,8 @@ class DataDisplayApp:
         print("screen started")
         self.root = root
         self.root.title("Environmental Data Display")
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
-
-    # Set the window to cover the full screen size
-        root.geometry(f"{screen_width}x{screen_height}")
+        root.attributes('-fullscreen', True) 
+        
         self.root.config(bg="#f0f0f0")
         self.root.grid_rowconfigure(0, weight=1)  # Allow vertical expansion
         self.root.grid_rowconfigure(1, weight=5)  # Allow vertical expansion

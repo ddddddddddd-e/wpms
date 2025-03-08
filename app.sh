@@ -3,7 +3,7 @@
 # Get the directory of the script
 script_dir=$(dirname "$0")
 
-venv_dir="$script_dir/.venv"
+venv_dir="/home/kickpi/Desktop/wpms"
 
 # Check if Python 3 is installed
 if command -v python3 &>/dev/null; then
@@ -223,7 +223,7 @@ class MQTTClient:
 
     def connect(self):
         self.setup_Connection = False
-        self.MqttThread = Thread(target=self.setupConnection)
+        self.MqttThread = Thread(target=self.setupConnection,daemon= True)
         self.MqttThread.start()
     def setupConnection(self):
         while not self.setup_Connection:
@@ -704,7 +704,12 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = DataDisplayApp(root)
     try:
+        with open("/tmp/isRun.txt" , "r") as file:
+            pass
         root.mainloop()
-    except KeyboardInterrupt:
+    except :
+        with open("/tmp/isRun.txt", "w") as file :
+            file.write("1")
+            app.root.destroy()
         pass
 EOF

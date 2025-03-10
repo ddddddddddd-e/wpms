@@ -380,6 +380,7 @@ def table(root):
                 data = [json.loads(line) for line in file]
                 return data[::-1]
         except Exception as e:
+            print(e)
             return []
 
     def refresh_table():
@@ -539,7 +540,6 @@ class DataDisplayApp:
         self.reader = RS485()
         self.ph = self.tss = self.cod = self.toc = self.temp = self.waterflow = None
         self.mqtt_client = MQTTClient()
-        self.running = True
         self.running = True
         try:
             self.update_thread = Thread(target=self.update_screen,daemon= True)

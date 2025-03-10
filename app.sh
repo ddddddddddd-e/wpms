@@ -375,16 +375,15 @@ def table(root):
     file_path = dir +"/data.jsonl"
 
     def load_data():
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = [json.loads(line) for line in file if line.strip()]  # Ignore empty lines
-                return data[::-1]
-        except json.JSONDecodeError as e:
-            print("JSON decoding error:", e)
-            return []
-        except Exception as e:
-            print("Unexpected error:", e)
-        return []
+        data = []
+        with open(file_path, "r", encoding="utf-8") as file:
+            for line in file:
+                try:
+                    data.append(json.loads(line.strip()))  # Remove any extra whitespace
+                except json.JSONDecodeError as e:
+                    print(f"Invalid JSON: {line.strip()}")  # Print invalid line
+                    print(f"Error: {e}")
+        return data
 
     def refresh_table():
         # Clear existing data

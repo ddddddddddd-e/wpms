@@ -698,15 +698,14 @@ class DataDisplayApp:
         new_screen = tk.Toplevel(self.root)
         table(new_screen)
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = DataDisplayApp(root)
     try:
         with open("/tmp/isRun.txt" , "r") as file:
             pass
+        root = tk.Tk()
+        app = DataDisplayApp(root)
         root.mainloop()
     except :
         with open("/tmp/isRun.txt", "w") as file :
             file.write("1")
-            app.root.destroy()
         pass
 EOF

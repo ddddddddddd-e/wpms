@@ -383,6 +383,7 @@ def table(root):
                 except json.JSONDecodeError as e:
                     print(f"Invalid JSON: {line.strip()}")  # Print invalid line
                     print(f"Error: {e}")
+            data = data[::-1]
         return data
 
     def refresh_table():

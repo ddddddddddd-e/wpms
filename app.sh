@@ -9,7 +9,7 @@ venv_dir="/home/kickpi/Desktop/wpms/"
 if command -v python3 &>/dev/null; then
     echo "Python 3 is already installed."
 else
-    echo "Python 3 is not installed. Installing..."
+    echo "Python 3 is not installed. Instaalling..."
     # Update package list and install Python 3
     sudo apt update
     sudo apt install python3
@@ -377,11 +377,14 @@ def table(root):
     def load_data():
         try:
             with open(file_path, "r", encoding="utf-8") as file:
-                data = [json.loads(line) for line in file]
+                data = [json.loads(line) for line in file if line.strip()]  # Ignore empty lines
                 return data[::-1]
-        except Exception as e:
-            print(e)
+        except json.JSONDecodeError as e:
+            print("JSON decoding error:", e)
             return []
+        except Exception as e:
+            print("Unexpected error:", e)
+        return []
 
     def refresh_table():
         # Clear existing data

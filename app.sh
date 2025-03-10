@@ -376,14 +376,21 @@ def table(root):
 
     def load_data():
         data = []
+        flage = False
         with open(file_path, "r", encoding="utf-8") as file:
             for line in file:
                 try:
                     data.append(json.loads(line.strip()))  # Remove any extra whitespace
                 except json.JSONDecodeError as e:
+                    flage = True
                     print(f"Invalid JSON: {line.strip()}")  # Print invalid line
                     print(f"Error: {e}")
-            data = data[::-1]
+        if flage:
+            with open(file_path,"w",encoding="utf-8") as file :
+                for d in data:
+                    json.dump(d , file)
+                    file.write("\n")
+        data = data[::-1]
         return data
 
     def refresh_table():

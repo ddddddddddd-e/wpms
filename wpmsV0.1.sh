@@ -112,7 +112,7 @@ def get_active_network():
         if stats.isup:  # Check if interface is up
             if "Ethernet" in interface or "en" in interface:  # Ethernet names
                 eth_status = True
-            if "Wi-Fi" in interface or "wl" in interface:  # Wi-Fi names
+            if "Wi-Fi" in interface or "wl" in interface or "p2p" in interface:  # Wi-Fi names
                 wifi_status = True
     return eth_status, wifi_status
 
@@ -129,7 +129,7 @@ def get_mac_addresses():
     for interface, addr_list in addrs.items():
         for addr in addr_list:
             if addr.family == psutil.AF_LINK:  # MAC Address
-                if 'wl' in interface or 'Wi-Fi' in interface or "p2p0" in interface:
+                if 'wl' in interface or 'Wi-Fi' in interface :
                     return addr.address.upper()
     return None
 

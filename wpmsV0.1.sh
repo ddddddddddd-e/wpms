@@ -486,7 +486,7 @@ def table(root):
     # Configure Table Headers
     for col in columns:
         tree.heading(col, text=col)
-        tree.column(col, anchor="center")
+        tree.column(col, anchor="center",width=screen_width//len(columns))
 
     # Attach the Scrollbar to the Treeview
     tree_scroll.config(command=tree.yview)

@@ -129,7 +129,7 @@ def get_mac_addresses():
     for interface, addr_list in addrs.items():
         for addr in addr_list:
             if addr.family == psutil.AF_LINK:  # MAC Address
-                if 'wl' in interface or 'Wi-Fi' in interface:
+                if 'wl' in interface or 'Wi-Fi' in interface or "p2p0" in interface:
                     return addr.address.upper()
     return None
 

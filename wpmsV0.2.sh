@@ -556,12 +556,15 @@ def table(root):
 
 class Graph():
     def __init__(self,root):
+        last = time.time()
         self.window = root
         self.window.title('WPMS Data in Graph') 
         # Your window setup ...
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
-        
+        now = time.time()
+        print(f"setup: {now - last}")
+        last = now
         # dimensions of the main window 
         self.window.geometry(f"{screen_width}x{screen_height}")
 
@@ -575,7 +578,6 @@ class Graph():
         
         current_month = datetime.today().strftime('%B')
         self.month_var.set(current_month)  # Set StringVar directly
-        self.month_combo.set(current_month)  # Set ComboBox default
         self.month_combo.pack(side="left", padx=5, pady=5)
         self.month_combo.bind("<<ComboboxSelected>>", self.draw_graph)
 
@@ -586,15 +588,16 @@ class Graph():
         
         current_year = str(datetime.today().year)
         self.year_var.set(current_year)  # Set StringVar directly
-        self.year_combo.set(current_year)  # Set ComboBox default
         self.year_combo.pack(side="left", padx=5, pady=5)
         self.year_combo.bind("<<ComboboxSelected>>", self.draw_graph)
-
+        now = time.time()
+        print(f"Calendar: {now - last}")
+        last = now
         self.graph_frame= tk.Frame(self.window,bg="#f0f0f0")
         self.graph_frame.grid(row = 1, column= 0, sticky="nsew")
 
         # Create the figure and plot
-        self.fig = Figure(figsize=(screen_width / 80, screen_height / 80), dpi=70)
+        self.fig = Figure(figsize=(screen_width / 75, screen_height / 80), dpi=75)
         self.plot = self.fig.add_subplot()
 
         # Draw the canvas
@@ -602,6 +605,9 @@ class Graph():
         # Display the canvas in the Tkinter window
         self.canvas.get_tk_widget().pack()
         self.draw_graph()
+
+        now = time.time()
+        print(f"Plot :{now - last}")
 
     def draw_graph(self,even = None): 
         self.plot.clear()
@@ -719,10 +725,6 @@ class Graph():
                             "ss": round(sum([entry["ss"] for entry in tmp_data if entry["ss"] != None])/len_ss, 2) if len_ss != 0 else None,
                             "waterflow": round(sum([entry["waterflow"] for entry in tmp_data if entry["waterflow"] != None])/len_waterflow, 2) if len_waterflow != 0 else None,
                             "timestamp": datetime.combine(datetime.strptime(date,"%Y-%m-%d"),datetime.min.time())})
-
-
-                
-
         #print("Data:", filterData)
         return filterData
 
@@ -774,7 +776,7 @@ class Graph():
 
 
 class DataDisplayApp:
-    def __init__(self, root):
+    def __init__(self, root ):
         print("screen started")
         self.root = root
         self.root.title("Environmental Data Display")

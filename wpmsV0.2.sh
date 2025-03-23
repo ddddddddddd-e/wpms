@@ -100,6 +100,14 @@ else
     echo "mplcursors is already installed."
 fi
 
+if ! python3 -c "import scipy" &>/dev/null 2>&1; then
+    echo "numpy is not installed. Installing now..."
+
+    # Install paho-mqtt using pip
+    pip install scipy
+else
+    echo "scipy is already installed."
+fi
 # Specify the file you want to create in the same directory
 file_path="$script_dir".
 
@@ -586,7 +594,7 @@ class Graph():
         self.graph_frame.grid(row = 1, column= 0, sticky="nsew")
 
         # Create the figure and plot
-        self.fig = Figure(figsize=(screen_width / 80, screen_height / 80), dpi=80)
+        self.fig = Figure(figsize=(screen_width / 80, screen_height / 80), dpi=70)
         self.plot = self.fig.add_subplot()
 
         # Draw the canvas

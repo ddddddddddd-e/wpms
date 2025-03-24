@@ -309,17 +309,6 @@ class MQTTClient:
                 ]
             }
         }
-        global dir
-        # Convert timestamp to datetime object
-        date_time = datetime.fromtimestamp(payload["payload"]["fields"][0]["timestamp"])
-
-        # Extract only the date (without time)
-        date = date_time.date()
-        with open(dir +"/"+str(date)+"data.jsonl", "a") as file:
-            data = payload["payload"]["fields"][0]
-            json.dump(data, file)
-            file.write("\n")
-        self.publish_dict(payload)
     
     def publish_dict(self,payload):
         json_payload = json.dumps(payload)
@@ -509,6 +498,10 @@ class Table():
                 for d in data:
                     json.dump(d, file)
                     file.write("\n")
+        try:
+            data = sorted(data, key=lambda x: x["timestamp"],reverse= True)
+        except:
+            pass
         return data
 
     def refresh_table(self):

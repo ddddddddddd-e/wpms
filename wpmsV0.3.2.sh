@@ -549,6 +549,7 @@ class Graph():
         start = time.time()
         self.window = root
         self.window.title('Plotting in Tkinter') 
+        
         # Your window setup ...
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
@@ -765,7 +766,7 @@ class Graph():
     def plot_data(self,datas, timestamps, color=None, label=None):
         self.plot.scatter(timestamps,datas,c= color,label = label)
         self.plot.plot(timestamps,datas, '-', color=color, label=label)
-        line,= self.plot.plot([],[],'o-', label = label)
+        line,= self.plot.plot([],[],'o-', label = label,color= color)
         self.lines.append(line)
 
 
@@ -1119,6 +1120,7 @@ class DataDisplayApp:
             return
 
         self.graph_window = tk.Toplevel(self.root)
+
         Graph(self.graph_window)
 
         def on_close():
@@ -1130,12 +1132,12 @@ if __name__ == "__main__":
     try:
         with open("/tmp/isRun.txt" , "r") as file:
             pass
-        root = tk.Tk()
-        app = DataDisplayApp(root)
-        root.mainloop()
     except  Exception as e:
         print(e)
         with open("/tmp/isRun.txt", "w") as file :
             file.write("1")
-        pass
+        root = tk.Tk()
+        app = DataDisplayApp(root)
+        root.mainloop()
+        
 EOF

@@ -106,7 +106,7 @@ if ! python3 -c "import scipy" &>/dev/null 2>&1; then
     # Install paho-mqtt using pip
     pip install scipy
 else
-    echo "scipy is already  ."
+    echo "scipy is already installed."
 fi
 # Specify the file you want to create in the same directory
 file_path="$script_dir".
@@ -1098,12 +1098,33 @@ class DataDisplayApp:
             time.sleep(2)
     
     def update_table(self):
-        new_screen = tk.Toplevel(self.root)
-        table = Table(new_screen)
+        # Prevent multiple table windows
+        if hasattr(self, 'table_window') and self.table_window.winfo_exists():
+            self.table_window.lift()
+            return
+
+        self.table_window = tk.Toplevel(self.root)
+        # Replace with your actual Table class
+        Table(self.table_window)
+
+        def on_close():
+            self.table_window.destroy()
+
+        self.table_window.protocol("WM_DELETE_WINDOW", on_close)
 
     def update_graph(self):
-        new_screen = tk.Toplevel(self.root)
-        graph = Graph(new_screen)
+        if hasattr(self, 'graph_window') and self.graph_window.winfo_exists():
+            self.graph_window.lift()  # Bring to front if it's already open
+            return
+
+        self.graph_window = tk.Toplevel(self.root)
+        Graph(self.graph_window)
+
+        def on_close():
+            self.graph_window.destroy()
+
+        self.graph_window.protocol("WM_DELETE_WINDOW", on_close)
+
 if __name__ == "__main__":
     try:
         with open("/tmp/isRun.txt" , "r") as file:

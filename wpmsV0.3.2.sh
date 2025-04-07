@@ -488,6 +488,7 @@ class Table():
                 for line in file:
                     try:
                         entry = json.loads(line.strip())  # Parse JSON line
+                        entry['ph']
                         data.append(entry)
                     except json.JSONDecodeError as e:
                         flag = True

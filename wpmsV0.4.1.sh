@@ -739,25 +739,26 @@ class Config:
     def show_mqtt_form(self):
         self.config_screen = tk.Toplevel(self.root)
         self.config_screen.geometry(f"{self.screen_width}x{self.screen_height}")
-
         self.config_screen.title("MQTT Config")
+        self.config_screen.configure(bg="#dcdcdc")
+
+        # Center bordered frame
+        self.form_frame = tk.Frame(self.config_screen, bg="white", bd=2, relief=tk.RIDGE, padx=30, pady=30)
+        self.form_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         self.entries = {}
-
         def create_field(label, key, show=None, default=""):
-            frame = tk.Frame(self.config_screen, bg="#d3d3d3")  # Light gray background
-            frame.pack(pady=10, padx=20, anchor='w')  # Aligned to left
+            row = len(self.entries)
+            label_widget = tk.Label(
+                self.form_frame, text=label, width=12, anchor='e',
+                font=("Arial", 20), bg="white"
+            )
+            label_widget.grid(row=row, column=0, pady=5, padx=(0, 10), sticky='e')
 
-            label_widget = tk.Label(frame, text=label, width=11, anchor='w',
-                                    font=("Arial", 25), bg="#d3d3d3")
-            label_widget.grid(row=0, column=0, sticky='w')
-
-
-            entry = tk.Entry(frame, width=30, font=("Arial", 25), show=show)
+            entry = tk.Entry(self.form_frame, width=30, font=("Arial", 20), show=show)
             entry.insert(0, default)
-            entry.grid(row=0, column=1, padx=(10, 5))
+            entry.grid(row=row, column=1, pady=5, padx=(0, 5))
             self.entries[key] = entry
 
-            # Add toggle button if it's a password field
             if show:
                 def toggle_show():
                     if entry.cget('show') == '':
@@ -767,8 +768,11 @@ class Config:
                         entry.config(show='')
                         toggle_btn.config(text='Hide')
 
-                toggle_btn = tk.Button(frame, text='Show', font=("Arial", 12), command=toggle_show)
-                toggle_btn.grid(row=0, column=2, padx=(5, 0))
+                toggle_btn = tk.Button(
+                    self.form_frame, text='Show', font=("Arial", 12),
+                    command=toggle_show, bg="#e0e0e0"
+                )
+                toggle_btn.grid(row=row, column=2, padx=(5, 0))
 
         try:
             with open(f"{dir}/config.json", "r") as file:
@@ -792,7 +796,14 @@ class Config:
             create_field("UserID:", "userId",show="*")
             create_field("Interval:", "interval",show="*")
 
-        tk.Button(self.config_screen, text="Submit",font=("Arial", 25), command=self.submit_mqtt).pack(pady=15)
+        submit_btn = tk.Button(
+            self.form_frame, text="Submit", font=("Arial", 20),
+            bg="#4CAF50", fg="white", padx=20, pady=5,
+            command=self.submit_mqtt
+        )
+        submit_btn.grid(row=len(self.entries), column=0, columnspan=3, pady=(20, 0), sticky="ew")
+
+        # Bind Enter key to submit
         self.config_screen.bind('<Return>', lambda event: self.submit_mqtt())
 
     def submit_mqtt(self):

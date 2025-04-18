@@ -437,7 +437,7 @@ class Table():
 
 
 class Graph():
-    def __init__(self,root):
+    def __init__(self,root :tk.Tk):
         start = time.time()
         self.window = root
         self.window.title('Plotting in Tkinter') 
@@ -540,7 +540,7 @@ class Graph():
         self.plot.set_xlabel('Date')
         self.plot.set_ylabel('Sensor Values')
         self.plot.set_title('Water Quality Sensor Data')
-        self.plot.legend(handles= self.lines)
+        self.fig.legend(handles= self.lines,loc = "upper left")
         self.plot.grid(True)
         
         self.canvas.draw()
@@ -688,20 +688,32 @@ class Config:
         self.master = tk.Toplevel(self.root)
         self.master.geometry(f"{self.screen_width}x{self.screen_height}")
         self.master.title("Login")
+        self.master.configure(bg="#dcdcdc")
 
-        self.username_frame = tk.Frame(self.master)
-        self.username_frame.pack(pady=10)
-        tk.Label(self.username_frame, text="Username:",font=("Arial",25)).pack(side=tk.LEFT)
-        self.username_entry = tk.Entry(self.username_frame, width=25,font=("Arial", 25))
-        self.username_entry.pack(side=tk.LEFT)
+        self.center_frame = tk.Frame(self.master, bg="white", bd=2, relief=tk.RIDGE, padx=30, pady=30)
+        self.center_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        self.password_frame = tk.Frame(self.master)
-        self.password_frame.pack(pady=10)
-        tk.Label(self.password_frame, text="Password:",font=("Arial",25)).pack(side=tk.LEFT)
-        self.password_entry = tk.Entry(self.password_frame, width=25, show="*",font=("Arial",25))
-        self.password_entry.pack(side=tk.LEFT)
+        tk.Label(
+            self.center_frame, text="THIS IS FOR TECHNICAL ONLY !",
+            font=("Arial", 20, "bold"), fg="black", bg="white"
+        ).grid(row=0, column=0, columnspan=2, pady=(0, 20))
 
-        tk.Button(self.master, text="Login",font=("Arial",25), command=self.do_login).pack(pady=10)
+        # Username row
+        tk.Label(self.center_frame, text="Username:", font=("Arial", 16), bg="white").grid(row=1, column=0, sticky="e", pady=5, padx=(0,10))
+        self.username_entry = tk.Entry(self.center_frame, font=("Arial", 16), width=25)
+        self.username_entry.grid(row=1, column=1, pady=5)
+
+        # Password row
+        tk.Label(self.center_frame, text="Password:", font=("Arial", 16), bg="white").grid(row=2, column=0, sticky="e", pady=5, padx=(0,10))
+        self.password_entry = tk.Entry(self.center_frame, font=("Arial", 16), width=25, show="*")
+        self.password_entry.grid(row=2, column=1, pady=5)
+
+        # Login button
+        tk.Button(
+            self.center_frame, text="Login", font=("Arial", 16),
+            bg="#4CAF50", fg="white", width=20, command=self.do_login
+        ).grid(row=3, column=0, columnspan=2, pady=20)
+
         self.master.bind('<Return>', self.do_login)
 
     def do_login(self, event=None):
@@ -735,7 +747,7 @@ class Config:
             frame = tk.Frame(self.config_screen, bg="#d3d3d3")  # Light gray background
             frame.pack(pady=10, padx=20, anchor='w')  # Aligned to left
 
-            label_widget = tk.Label(frame, text=label, width=15, anchor='w',
+            label_widget = tk.Label(frame, text=label, width=11, anchor='w',
                                     font=("Arial", 25), bg="#d3d3d3")
             label_widget.grid(row=0, column=0, sticky='w')
 
@@ -765,7 +777,7 @@ class Config:
             print(e)
         if data:
             create_field("Server:", "server",default=data["server"])
-            create_field("Port","port",default= str(data["port"]))
+            create_field("Port:","port",default= str(data["port"]))
             create_field("Topic:", "topic",default=data["topic"])
             create_field("Username:", "username",default=data["username"])
             create_field("Password:", "password", show="*",default=data["password"])
@@ -773,7 +785,7 @@ class Config:
             create_field("Interval:", "interval",default= str(data["interval"]))
         else:
             create_field("Server:", "server",show="*")
-            create_field("Port","port",show="*")
+            create_field("Port:","port",show="*")
             create_field("Topic:", "topic",show="*")
             create_field("Username:", "username",show="*")
             create_field("Password:", "password", show="*")

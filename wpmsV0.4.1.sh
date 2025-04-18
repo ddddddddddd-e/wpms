@@ -720,7 +720,9 @@ class Config:
             
         except Exception as e:
             messagebox.showerror("Error", f"Could not read login.json:\n{e}")
-            print(e)
+            with open(f"{dir}/login.json", "w") as file:
+                data = {"username": "Admin", "password": "password"}
+                json.dump(data, file, indent=4)
 
     def show_mqtt_form(self):
         self.config_screen = tk.Toplevel(self.root)

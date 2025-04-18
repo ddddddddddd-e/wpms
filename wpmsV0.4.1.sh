@@ -735,8 +735,8 @@ class Config:
             frame = tk.Frame(self.config_screen, bg="#d3d3d3")  # Light gray background
             frame.pack(pady=10, padx=20, anchor='w')  # Aligned to left
 
-            label_widget = tk.Label(frame, text=label, width=15, anchor='w',
-                                    font=("Arial", 35), bg="#d3d3d3")
+            label_widget = tk.Label(frame, text=label, width=5, anchor='w',
+                                    font=("Arial", 25), bg="#d3d3d3")
             label_widget.grid(row=0, column=0, sticky='w')
 
             entry = tk.Entry(frame, width=30, font=("Arial", 35), show=show)

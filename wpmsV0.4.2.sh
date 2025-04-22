@@ -828,6 +828,53 @@ class Config:
         except Exception as e:
             print(f"Failed to reboot: {e}")
 
+class AboutUsWindow:
+    def __init__(self, root: tk.Tk):
+        self.root = root
+        self.screen_width = self.root.winfo_screenwidth()
+        self.screen_height = self.root.winfo_screenheight()
+
+    def start(self):
+        about_win = tk.Toplevel(self.root)
+        about_win.title("About Us")
+        about_win.geometry(f"{self.screen_width}x{self.screen_height}")
+        about_win.configure(bg="#f0f0f0")
+
+        frame = tk.Frame(about_win, bg="white", bd=2, relief=tk.RIDGE, padx=20, pady=20)
+        frame.pack(expand=True, fill="both", padx=40, pady=40)
+
+        title = tk.Label(frame, text="About Us", font=("Arial", 24, "bold"), bg="white")
+        title.pack(pady=(0, 20))
+
+        # Text widget in a frame with a scrollbar
+        text_frame = tk.Frame(frame, bg="white")
+        text_frame.pack(expand=True, fill="both")
+
+        text_widget = tk.Text(text_frame, wrap="word", font=("Arial", 14), bg="white", relief=tk.FLAT)
+        text_widget.pack(side="left", fill="both", expand=True)
+
+        scrollbar = ttk.Scrollbar(text_frame, command=text_widget.yview)
+        scrollbar.pack(side="right", fill="y")
+        text_widget.config(yscrollcommand=scrollbar.set)
+
+        about_text = (
+            "We are a passionate team dedicated to advancing environmental monitoring through smart technology.\n\n"
+            "Our current project, developed under the support of the Ministry of Environment (MoE), focuses on "
+            "creating an IoT-based system for real-time water quality monitoring.\n\n"
+            "Our custom-built device is designed to detect and collect critical water parameters including:\n"
+            "• COD (Chemical Oxygen Demand)\n"
+            "• pH levels\n"
+            "• TSS (Total Suspended Solids)\n"
+            "• Temperature\n"
+            "• Water Flow Rate\n\n"
+            "This system provides accurate, continuous data collection to help ensure water safety and sustainability. "
+            "We aim to empower researchers, institutions, and environmental agencies with reliable insights for "
+            "decision-making and action.\n\n"
+            "By combining sensor technology, data processing, and IoT connectivity, we are committed to making "
+            "environmental monitoring smarter, faster, and more efficient."
+        )
+        text_widget.insert("1.0", about_text)
+        text_widget.config(state="disabled")
 
 class DataDisplayApp:
     def __init__(self, root :tk.Tk ):
@@ -843,6 +890,7 @@ class DataDisplayApp:
         self.root.grid_columnconfigure(0, weight=1)  # Allow vertical expansion
 
         self.setting = Config(self.root)
+        self.about = AboutUsWindow(self.root)
 
         # Header Frame
         self.header_frame = tk.Frame(self.root, bg="#2a2a2a")
@@ -893,7 +941,7 @@ class DataDisplayApp:
         self.history_button = self.create_button("Table",cmd= self.update_table)
         self.graph_button = self.create_button("Graph", cmd= self.update_graph)
         self.settings_button = self.create_button("Settings",cmd = self.setting.build_login_ui)
-        self.about_button = self.create_button("About Me")
+        self.about_button = self.create_button("About Me",self.about.start)
 
         self.history_button.grid(row=0, column=0, padx=0, pady=5, sticky="nsew")
         self.graph_button.grid(row=1, column=0, padx=0, pady=5, sticky="nsew")

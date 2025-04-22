@@ -364,6 +364,7 @@ class Table():
         self.tree_scroll.config(command=self.tree.yview)
         self.tree.pack(fill="both", expand=True)
         self.last = 500
+        self.mouse_held = False
         
         self.tree.bind("<ButtonPress-1>", self.on_press)
         self.tree.bind("<ButtonRelease-1>",self.on_release)
@@ -447,7 +448,6 @@ class Table():
     
     def on_release(self, event):
         self.mouse_held = False
-        print(self.last)
 
 class Graph():
     def __init__(self,root :tk.Tk):

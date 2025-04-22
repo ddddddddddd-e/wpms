@@ -326,6 +326,7 @@ class Table():
 
         # Set the window to cover the full screen size
         self.root.geometry(f"{screen_width}x{screen_height}")
+        self.interval = 30000
         
         column_width = screen_width // 6
 
@@ -364,10 +365,9 @@ class Table():
         self.tree.pack(fill="both", expand=True)
         self.last = 500
         
-        self.tree.bind("<ButtonPress-1>", self.on_row_press)
-        self.tree.bind("<B1-Motion>", self.on_row_drag)
-        self.tree.bind("<ButtonRelease-1>", self.on_row_release) 
-
+        self.tree.bind("<ButtonPress-1>", lambda e: setattr(self, "mouse_held", True) or setattr(self, "last", e.y))
+        self.tree.bind("<ButtonRelease-1>", lambda e: setattr(self, "mouse_held", False))
+        self.tree.bind("<B1-Motion>", self.on_touch_scroll_hold)
         # Initial Load
         self.refresh_table()
 
@@ -405,8 +405,9 @@ class Table():
         return data
 
     def refresh_table(self):
+        
         """Clears and refreshes table data based on filtered JSONL data."""
-        self.root.after(30000, self.refresh_table)  # Refresh every 10 seconds
+        self.root.after(self.interval, self.refresh_table)  # Refresh every 10 seconds
         for item in self.tree.get_children():
             self.tree.delete(item)
         selected_date = self.date_entry.get_date()
@@ -431,25 +432,12 @@ class Table():
         self.refresh_table()
 
     # GUI Setup
-    def on_row_press(self, event):
-        region = self.tree.identify("region", event.x, event.y)
-        if region == "cell":
-            self.dragging_item = self.tree.identify_row(event.y)
-
-    def on_row_drag(self, event):
-        if self.dragging_item:
-            target_row = self.tree.identify_row(event.y)
-            if target_row and target_row != self.dragging_item:
-                # Swap positions
-                dragging_data = self.tree.item(self.dragging_item)
-                target_data = self.tree.item(target_row)
-
-                self.tree.item(self.dragging_item, values=target_data["values"])
-                self.tree.item(target_row, values=dragging_data["values"])
-                self.dragging_item = target_row
-
-    def on_row_release(self, event):
-        self.dragging_item = None
+    def on_touch_scroll_hold(self, event):
+        if self.tree.selection():  # Only scroll if something is selected
+            scroll_units = -(event.y - self.last) // 10  # Or some other scale factor
+            if scroll_units != 0:
+                self.tree.yview_scroll(int(scroll_units), "units")
+                self.last = event.y
 
 
 class Graph():

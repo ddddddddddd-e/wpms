@@ -365,8 +365,8 @@ class Table():
         self.tree.pack(fill="both", expand=True)
         self.last = 500
         
-        self.tree.bind("<ButtonPress-1>", lambda e: setattr(self, "mouse_held", True) or setattr(self, "last", e.y))
-        self.tree.bind("<ButtonRelease-1>", lambda e: setattr(self, "mouse_held", False))
+        self.tree.bind("<ButtonPress-1>", self.on_press)
+        self.tree.bind("<ButtonRelease-1>",self.on_release)
         self.tree.bind("<B1-Motion>", self.on_touch_scroll_hold)
         # Initial Load
         self.refresh_table()
@@ -440,7 +440,13 @@ class Table():
             if scroll_units != 0:
                 self.tree.yview_scroll(int(scroll_units), "units")
                 self.last = event.y
-
+    def on_press(self, event ):
+        self.mouse_held = True
+        self.last = event.y
+    
+    def on_release(self, event):
+        self.mouse_held = False
+        print(self.last)
 
 class Graph():
     def __init__(self,root :tk.Tk):

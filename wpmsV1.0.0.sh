@@ -435,6 +435,8 @@ class Table():
     def on_touch_scroll_hold(self, event):
         if self.tree.selection():  # Only scroll if something is selected
             scroll_units = -(event.y - self.last) // 10  # Or some other scale factor
+            if abs(scroll_units) >10 :
+                self.last = event.y
             if scroll_units != 0:
                 self.tree.yview_scroll(int(scroll_units), "units")
                 self.last = event.y

@@ -330,10 +330,9 @@ class RS485:
         ports = serial.tools.list_ports.comports()
         self.port = []
         for port, desc, hwid in sorted(ports):
-            if "3-1" in hwid or "3-2" in hwid:
-                print(port, desc, hwid.split("LOCATION=")[1].split(".")[1])
-                if "PID=1A86:7523" in hwid:  # pid: 1A86, vid: 7523 is code for chip CH340 on RS485 module(RS485)
-                    self.port.append(port)
+            if "PID=1A86:7523" in hwid:  # pid: 1A86, vid: 7523 is code for chip  on RS485 module(RS485)
+                print(port)
+                self.port.append(port)
         if self.port :
             return True
         return False

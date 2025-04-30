@@ -126,6 +126,10 @@ class MQTTClient:
                 first_line = lines[0].strip()  # Get the first line
                 try:
                     data = json.loads(first_line)  # Parse JSON
+                    try: 
+                        data = json.dumps(data)
+                    except Exception as e :
+                        print(e)
                     if(self.publish_dict(data)):
                         with open(buffer_path,"a") as file1:
                             json.dump(data,file1)

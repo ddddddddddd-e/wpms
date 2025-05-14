@@ -229,6 +229,9 @@ class RS485:
         self.burate = baudrate
         self.timeout = timeout
         self.ser = self.setup()
+        self.ser_ph = None
+        self.ser_cod = None
+        self.ser_tss = None
 
     def setup(self):
         if not self.port:
@@ -241,93 +244,135 @@ class RS485:
         except serial.SerialException: 
             pass
         return self.ser
+    def ph_sensor_init(self,ser : serial.Serial):
+        sendData = [0x0A, 0x03, 0x00, 0x01, 0x00, 0x02, 0x94, 0xB0]
+        ser.write(sendData)
+        ser.flush()
+
+        start_time = time.time()
+        while ser.in_waiting < 9 and (time.time() - start_time) < 1:
+            time.sleep(0.01)
+
+
+        raw_data = ser.read(9)
+        ph_value = bytes([raw_data[5], raw_data[6], raw_data[3], raw_data[4]])
+        value = round(struct.unpack('>f', ph_value)[0], 2)
+        return value
+        
 
     def ph_sensor(self):
-        sendData = [0x0A, 0x03, 0x00, 0x01, 0x00, 0x02, 0x94, 0xB0]
-        for ser in self.ser:
-            try:
-                ser.write(sendData)
-                ser.flush()
-
-                start_time = time.time()
-                while ser.in_waiting < 9 and (time.time() - start_time) < 1:
-                    time.sleep(0.01)
-
-                if ser.in_waiting >= 9:
-                    raw_data = ser.read(9)
-                    ph_value = bytes([raw_data[5], raw_data[6], raw_data[3], raw_data[4]])
-                    value = round(struct.unpack('>f', ph_value)[0], 2)
-                    return value
-            except:
-                pass
-
+        try: 
+            value = self.ph_sensor_init(self.ser_ph)
+            if value is not None:
+                return value
+        except :
+            self.ser_ph = None
+            for ser in self.ser:
+                try:
+                    value =self.ph_sensor_init(ser)
+                    if value is not None:
+                        self.ser_ph = ser
+                        print(value)
+                        return value
+                except :
+                    pass
         return None
-
-    def temp_sensor(self):
+    
+    def temp_sensor_init(self,ser : serial.Serial):
         sendData = [0x0A, 0x03, 0x00, 0x03, 0x00, 0x02, 0x35, 0x70]
+        ser.write(sendData)
+        ser.flush()
 
-        for ser in self.ser :
-            try:
-                ser.write(sendData)
-                ser.flush()
+        start_time = time.time()
+        while ser.in_waiting < 9 and (time.time() - start_time) < 1:
+            time.sleep(0.01)
 
-                start_time = time.time()
-                while ser.in_waiting < 9 and (time.time() - start_time) < 1:
-                    time.sleep(0.01)
-
-                if ser.in_waiting >= 9:
-                    raw_data = ser.read(9)
-                    temp_value = bytes([raw_data[5], raw_data[6], raw_data[3], raw_data[4]])
-                    value = round(struct.unpack('>f', temp_value)[0], 2)
-                    print(value)
-                    return value
-            except :
-                pass
-        print("temp is None....")
-        return None
-
-    def cod_sensor(self):
+        raw_data = ser.read(9)
+        temp_value = bytes([raw_data[5], raw_data[6], raw_data[3], raw_data[4]])
+        value = round(struct.unpack('>f', temp_value)[0], 2)
+        return value
+    
+    def temp_sensor(self):
+        try:
+            value = self.temp_sensor_init(self.ser_temp)
+            if value is not None:
+                return value
+        except :
+            self.ser_temp = None
+            for ser in self.ser:
+                try:
+                    value = self.temp_sensor_init(ser)
+                    if value is not None:
+                        self.ser_temp = ser
+                        print(value)
+                        return value
+                except :
+                    pass
+            return None
+        
+    def cod_sensor_init(self,ser : serial.Serial):
         sendData = bytes([0x22, 0x03, 0x26, 0x00, 0x00, 0x06, 0xC9, 0xD3])
-        for ser in self.ser:
-            try:
-                ser.write(sendData)
-                ser.flush()
+        ser.write(sendData)
+        ser.flush()
 
-                start_time = time.time()
-                while ser.in_waiting < 17 and (time.time() - start_time) < 1:
-                    time.sleep(0.01)
+        start_time = time.time()
+        while ser.in_waiting < 17 and (time.time() - start_time) < 1:
+            time.sleep(0.01)
 
-                if ser.in_waiting >= 17:
-                    raw_data = ser.read(17)
-                    cod_data = bytes([raw_data[10], raw_data[9], raw_data[8], raw_data[7]])
-                    toc_data = bytes([raw_data[14], raw_data[13], raw_data[12], raw_data[11]])
+        raw_data = ser.read(17)
+        cod_data = bytes([raw_data[10], raw_data[9], raw_data[8], raw_data[7]])
+        toc_data = bytes([raw_data[14], raw_data[13], raw_data[12], raw_data[11]])
 
-                    cod = round(struct.unpack('>f', cod_data)[0], 2)
-                    toc = round(struct.unpack('>f', toc_data)[0], 2)
-                    return cod, toc
-            except:
-                pass
-        return None, None
+        cod = round(struct.unpack('>f', cod_data)[0], 2)
+        toc = round(struct.unpack('>f', toc_data)[0], 2)
+        return cod, toc
+    def cod_sensor(self):
+
+        try:
+            cod, toc = self.cod_sensor_init(self.ser_cod)
+            if cod is not None and toc is not None:
+                return cod, toc
+        except :
+            self.ser_cod = None
+            for ser in self.ser:
+                try:
+                    cod, toc = self.cod_sensor_init(ser)
+                    if cod is not None and toc is not None:
+                        self.ser_cod = ser
+                        return cod, toc
+                except :
+                    pass
+            return None, None
+
+    def tss_sensor_init(self,ser : serial.Serial):
+        sendData = [0x0E, 0x03, 0x2C, 0x00, 0x00, 0x04, 0x4C, 0x66]
+        ser.write(sendData)
+        ser.flush()
+
+        start_time = time.time()
+        while ser.in_waiting < 13 and (time.time() - start_time) < 1:
+            time.sleep(0.01)
+
+        raw_data = ser.read(13)
+        tss_data = bytes([raw_data[10], raw_data[9], raw_data[8], raw_data[7]])
+        value = round(struct.unpack('>f', tss_data)[0], 2)
+        return value
 
     def tss_sensor(self):
-        sendData = [0x0E, 0x03, 0x2C, 0x00, 0x00, 0x04, 0x4C, 0x66]
-        for ser in self.ser:
-            try:
-                ser.write(sendData)
-                ser.flush()
-
-                start_time = time.time()
-                while ser.in_waiting < 13 and (time.time() - start_time) < 1:
-                    time.sleep(0.01)
-
-                if ser.in_waiting >= 13:
-                    raw_data = ser.read(13)
-                    tss_data = bytes([raw_data[10], raw_data[9], raw_data[8], raw_data[7]])
-                    value = round(struct.unpack('>f', tss_data)[0], 2)
-                    return value
-            except:
-                pass
-
+        try:
+            value = self.tss_sensor_init(self.ser_tss)
+            if value is not None:
+                return value
+        except :
+            self.ser_tss = None
+            for ser in self.ser:
+                try:
+                    value = self.tss_sensor_init(ser)
+                    if value is not None:
+                        self.ser_tss = ser
+                        return value
+                except :
+                    pass
         return None
     
     def check_serial(self):
@@ -335,7 +380,6 @@ class RS485:
         self.port = []
         for port, desc, hwid in sorted(ports):
             if "PID=1A86:7523" in hwid:  # pid: 1A86, vid: 7523 is code for chip  on RS485 module(RS485)
-                print(port)
                 self.port.append(port)
         if self.port :
             return True
@@ -826,13 +870,13 @@ class Config:
             create_field("UserID:", "userId",default=data["userId"])
             create_field("Interval:", "interval",default= str(data["interval"]))
         else:
-            create_field("Server:", "server",show="*")
-            create_field("Port:","port",show="*")
-            create_field("Topic:", "topic",show="*")
-            create_field("Username:", "username",show="*")
+            create_field("Server:", "server")
+            create_field("Port:","port")
+            create_field("Topic:", "topic",)
+            create_field("Username:", "username")
             create_field("Password:", "password", show="*")
-            create_field("UserID:", "userId",show="*")
-            create_field("Interval:", "interval",show="*")
+            create_field("UserID:", "userId")
+            create_field("Interval:", "interval")
 
         submit_btn = tk.Button(
             self.form_frame, text="Submit", font=("Arial", 20),
@@ -1177,12 +1221,12 @@ class DataDisplayApp:
         time.sleep(0.5)
         while self.running:
             start = time.time()
-            self.ph = round(random.uniform(4.50, 9.50),2)
-            self.tss = round(random.uniform(0, 50),2)
-            self.cod = round(random.uniform(25, 68),2)
-            self.toc = round(random.uniform(4, 25),2)
-            self.temp = None
-            self.waterflow = None
+            ph = round(random.uniform(4.50, 9.50),2)
+            tss = round(random.uniform(0, 50),2)
+            cod = round(random.uniform(25, 68),2)
+            toc = round(random.uniform(4, 25),2)
+            temp = None
+            waterflow = None
             try :
                 if not self.reader.ser :
                     self.reader.ser = self.reader.setup()
@@ -1190,20 +1234,26 @@ class DataDisplayApp:
                     if self.reader.port:
                         try:
                             self.fush = True
-                            self.ph = self.reader.ph_sensor()
+                            ph = self.reader.ph_sensor()
                             time.sleep(1)
-                            self.tss = self.reader.tss_sensor()
+                            tss = self.reader.tss_sensor()
                             time.sleep(1)
-                            self.cod, self.toc = self.reader.cod_sensor()
+                            cod, toc = self.reader.cod_sensor()
                             time.sleep(1)
-                            self.temp = self.reader.temp_sensor()
+                            temp = self.reader.temp_sensor()
                             time.sleep(1)
-                            self.waterflow = None
+                            waterflow = None
                             time.sleep(1)
                             self.fush = False
                         except Exception as e:
 
                             self.fush = False
+                self.ph = ph
+                self.tss = tss
+                self.cod = cod
+                self.toc = toc
+                self.temp = temp
+                self.waterflow = waterflow
                 end = time.time()
                 delay = self.screenInterval - (end -start)
                 time.sleep(delay)
